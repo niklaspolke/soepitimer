@@ -2,6 +2,7 @@ package eu.selfhost.posthuman.soepitimer.model.workday;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Objects;
 
 /**
  * Copyright 2020 Niklas Polke
@@ -31,6 +32,8 @@ public class Workday {
 
     private LocalTime timeStop;
 
+    private boolean dirty = false;
+
     public Workday(final LocalDate date) {
         this.date = date;
     }
@@ -56,7 +59,9 @@ public class Workday {
     }
 
     public void setTimeStart(final LocalTime newTime) {
-        timeStart = cleanSeconds(newTime);
+        final LocalTime cleanedNewTime = cleanSeconds(newTime);
+        dirty = dirty || !Objects.equals(timeStart, cleanedNewTime);
+        timeStart = cleanedNewTime;
     }
 
     public LocalTime getTimeStop() {
@@ -64,7 +69,17 @@ public class Workday {
     }
 
     public void setTimeStop(final LocalTime newTime) {
-        timeStop = cleanSeconds(newTime);
+        final LocalTime cleanedNewTime = cleanSeconds(newTime);
+        dirty = dirty || !Objects.equals(timeStop, cleanedNewTime);
+        timeStop = cleanedNewTime;
+    }
+
+    public boolean isDirty() {
+        return dirty;
+    }
+
+    public void resetDirty() {
+        dirty = false;
     }
 
     @Override

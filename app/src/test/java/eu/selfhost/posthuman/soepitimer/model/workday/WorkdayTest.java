@@ -28,6 +28,7 @@ import static org.junit.Assert.assertTrue;
  * @author Niklas Polke
  */
 public class WorkdayTest {
+
     private static final LocalDate SOME_DATE = LocalDate.of(2020, 6, 9);
     private static final LocalTime SOME_TIME = LocalTime.of(17, 39);
     private static final LocalTime SOME_TIME_WITH_SECONDS = SOME_TIME.withSecond(12).withNano(739);
@@ -100,6 +101,88 @@ public class WorkdayTest {
     public void setTimeStop_withSeconds() {
         day.setTimeStop(SOME_TIME_WITH_SECONDS);
         assertEquals(SOME_TIME, day.getTimeStop());
+    }
+
+    @Test
+    public void isDirty_initial() {
+        assertFalse(day.isDirty());
+    }
+
+    @Test
+    public void isDirty_setTimeStart() {
+        day.setTimeStart(SOME_TIME);
+
+        assertTrue(day.isDirty());
+    }
+
+    @Test
+    public void isDirty_setTimeStartSame() {
+        day.setTimeStart(SOME_TIME);
+        resetDirty();
+        day.setTimeStart(SOME_TIME);
+
+        assertFalse(day.isDirty());
+    }
+
+    @Test
+    public void isDirty_setTimeStartEqual() {
+        day.setTimeStart(SOME_TIME);
+        resetDirty();
+        day.setTimeStart(SOME_TIME_WITH_SECONDS);
+
+        assertFalse(day.isDirty());
+    }
+
+    @Test
+    public void isDirty_setTimeStartToNull() {
+        day.setTimeStart(SOME_TIME);
+        resetDirty();
+        day.setTimeStart(null);
+
+        assertTrue(day.isDirty());
+    }
+
+    @Test
+    public void isDirty_setTimeStop() {
+        day.setTimeStop(SOME_TIME);
+
+        assertTrue(day.isDirty());
+    }
+
+    @Test
+    public void isDirty_setTimeStopSame() {
+        day.setTimeStop(SOME_TIME);
+        resetDirty();
+        day.setTimeStop(SOME_TIME);
+
+        assertFalse(day.isDirty());
+    }
+
+    @Test
+    public void isDirty_setTimeStopEqual() {
+        day.setTimeStop(SOME_TIME);
+        resetDirty();
+        day.setTimeStop(SOME_TIME_WITH_SECONDS);
+
+        assertFalse(day.isDirty());
+    }
+
+    @Test
+    public void isDirty_setTimeStopToNull() {
+        day.setTimeStop(SOME_TIME);
+        resetDirty();
+        day.setTimeStop(null);
+
+        assertTrue(day.isDirty());
+    }
+
+    @Test
+    public void resetDirty() {
+        day.setTimeStart(SOME_TIME);
+
+        day.resetDirty();
+
+        assertFalse(day.isDirty());
     }
 
     @Test
