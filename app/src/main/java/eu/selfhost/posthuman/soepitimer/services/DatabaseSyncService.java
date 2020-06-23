@@ -58,7 +58,7 @@ public class DatabaseSyncService extends SingleThreadPoolService {
             WorkdayCollection.workday.resetDirty();
             localBroadcastManager.sendBroadcast(this, new Intent(BROADCAST_ACTION_UPDATE));
         }
-        return false;
+        return true;
     }
 
     private WorkdayDao lazilyGetDao() {

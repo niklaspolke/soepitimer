@@ -118,6 +118,13 @@ public class MainActivity extends AppCompatActivity {
             textView.setText(TIME_INITIAL_VALUE);
         }
 
+        textView = findViewById(R.id.workTime);
+        if (workday.getTimeStart() != null && workday.getTimeStop() != null) {
+            textView.setText(workday.getTimeStop().minusHours(workday.getTimeStart().getHour()).minusMinutes(workday.getTimeStart().getMinute()).format(TIME_FORMATTER));
+        } else {
+            textView.setText(TIME_INITIAL_VALUE);
+        }
+
         if (workday.getTimeStart() != null && workday.getTimeStop() == null) {
             findViewById(R.id.buttonStart).setEnabled(false);
             findViewById(R.id.buttonStop).setEnabled(true);
