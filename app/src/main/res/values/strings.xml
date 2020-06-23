@@ -3,4 +3,12 @@
 
     <!-- services -->
     <string name="databasesyncservice_description">Service um SoepiTimer-Daten lokal zu speichern und zu laden</string>
+
+    <!-- MainActivity -->
+    <string name="main_button_start">Start</string>
+    <string name="main_button_stop">Stop</string>
+    <string name="main_label_start">Arbeitsbeginn</string>
+    <string name="main_label_stop">Arbeitsende</string>
+    <string name="main_default_date">11.06.2020</string>
+    <string name="main_default_time">18:03</string>
 </resources>

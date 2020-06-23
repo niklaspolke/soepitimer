@@ -1,5 +1,7 @@
 package eu.selfhost.posthuman.soepitimer.services;
 
+import android.content.Intent;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -19,6 +21,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -97,6 +100,8 @@ public class DatabaseSyncServiceTest {
         assertNull(WorkdayCollection.workday.getTimeStart());
         assertNull(WorkdayCollection.workday.getTimeStop());
         assertFalse(WorkdayCollection.workday.isDirty());
+
+        verify(broadcastManagerMock).sendBroadcast(same(service), any(Intent.class));
     }
 
     @Test
@@ -121,6 +126,8 @@ public class DatabaseSyncServiceTest {
         assertFalse(WorkdayCollection.workday.isDirty());
         verify(daoMock, never()).insert(any());
         verify(daoMock, never()).update(any());
+
+        verify(broadcastManagerMock).sendBroadcast(same(service), any(Intent.class));
     }
 
     @Test
@@ -156,12 +163,13 @@ public class DatabaseSyncServiceTest {
         assertNull(WorkdayCollection.workday.getTimeStart());
         assertEquals(SOME_TIME, WorkdayCollection.workday.getTimeStop());
         assertFalse(WorkdayCollection.workday.isDirty());
+
+        verify(broadcastManagerMock).sendBroadcast(same(service), any(Intent.class));
     }
 
     @Test
     public void runJob_withIdNotDirty() {
         // expect no changes
-        //TODO
         WorkdayCollection.workday = new Workday(SOME_DATE);
         WorkdayCollection.workday.setId(SOME_ID);
         WorkdayCollection.workday.setTimeStop(SOME_TIME);
@@ -184,5 +192,7 @@ public class DatabaseSyncServiceTest {
         assertFalse(WorkdayCollection.workday.isDirty());
         verify(daoMock, never()).insert(any());
         verify(daoMock, never()).update(any());
+
+        verify(broadcastManagerMock).sendBroadcast(same(service), any(Intent.class));
     }
 }
