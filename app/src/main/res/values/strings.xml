@@ -6,6 +6,8 @@
 
     <!-- MainActivity -->
     <string name="main_button_start">Start</string>
+    <string name="main_button_break_break">Pause</string>
+    <string name="main_button_break_continue">Fortsetzen</string>
     <string name="main_button_stop">Stop</string>
     <string name="main_label_start">Arbeitsbeginn</string>
     <string name="main_label_stop">Arbeitsende</string>
