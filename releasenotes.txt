@@ -1,0 +1,4 @@
+1.0.0
+- Start-/Stop-Buttons
+- Anzeige Start-/Stopzeit
+- Berechnung und Anzeige Arbeitszeit
