@@ -7,6 +7,7 @@ import java.time.LocalTime;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -183,6 +184,12 @@ public class WorkdayTest {
         day.resetDirty();
 
         assertFalse(day.isDirty());
+    }
+
+    @Test
+    public void getWorkdayBreaks_initial() {
+        assertNotNull(day.getWorkdayBreaks());
+        assertEquals(0, day.getWorkdayBreaks().size());
     }
 
     @Test

@@ -2,6 +2,8 @@ package eu.selfhost.posthuman.soepitimer.model.workday;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -31,6 +33,8 @@ public class Workday {
     private LocalTime timeStart;
 
     private LocalTime timeStop;
+
+    private List<WorkdayBreak> breaks = new ArrayList<WorkdayBreak>();
 
     private boolean dirty = false;
 
@@ -74,8 +78,16 @@ public class Workday {
         timeStop = cleanedNewTime;
     }
 
+    public List<WorkdayBreak> getWorkdayBreaks() {
+        return breaks;
+    }
+
     public boolean isDirty() {
         return dirty;
+    }
+
+    public void setDirty() {
+        dirty = true;
     }
 
     public void resetDirty() {

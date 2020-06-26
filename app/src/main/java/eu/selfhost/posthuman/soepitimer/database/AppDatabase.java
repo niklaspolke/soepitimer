@@ -5,7 +5,10 @@ import android.content.Context;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.migration.Migration;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
+import eu.selfhost.posthuman.soepitimer.model.BreakEntity;
 import eu.selfhost.posthuman.soepitimer.model.WorkdayEntity;
 
 /**
@@ -25,9 +28,10 @@ import eu.selfhost.posthuman.soepitimer.model.WorkdayEntity;
  *
  * @author Niklas Polke
  */
-@Database(entities = {WorkdayEntity.class}, version = 1)
+@Database(entities = {WorkdayEntity.class, BreakEntity.class}, version = 2)
 public abstract class AppDatabase extends RoomDatabase {
     public abstract WorkdayDao workdayDao();
+    public abstract WorkdayBreakDao workdayBreakDao();
 
     public static final String DB_NAME = "timetrackerDB";
 
@@ -35,6 +39,7 @@ public abstract class AppDatabase extends RoomDatabase {
 
     public static void initializeDatabase(final Context context) {
         singletonDatabase = Room.databaseBuilder(context, AppDatabase.class, DB_NAME)
+                .addMigrations(MIGRATION_1_2)
                 .enableMultiInstanceInvalidation()
                 .build();
     }
@@ -42,4 +47,13 @@ public abstract class AppDatabase extends RoomDatabase {
     public static AppDatabase get() {
         return singletonDatabase;
     }
+
+    static final Migration MIGRATION_1_2 = new Migration(1, 2) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            //FIXME problem not finding index in table info
+            database.execSQL("CREATE TABLE workdaybreak (id INTEGER NOT NULL PRIMARY KEY, workdayId INTEGER, break_start TEXT, break_end TEXT, FOREIGN KEY(workdayId) REFERENCES workday(id) ON UPDATE NO ACTION ON DELETE CASCADE)");
+            database.execSQL("CREATE INDEX `index_workdaybreak_workdayId` ON `workdaybreak` (`workdayId`)");
+        }
+    };
 }
