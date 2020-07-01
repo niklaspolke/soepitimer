@@ -87,4 +87,110 @@ public class TimeCalculatorTest {
         assertEquals(0, result.getSecond());
         assertEquals(0, result.getNano());
     }
+
+    @Test
+    public void calcBreaktime_noBreaks() {
+        day = new Workday(SOME_DATE);
+
+        assertNull(TimeCalculator.calcBreaktime(day));
+    }
+
+    @Test
+    public void calcBreaktime_breakWithoutTimes() {
+        day = new Workday(SOME_DATE);
+        WorkdayBreak break1 = new WorkdayBreak();
+        day.getWorkdayBreaks().add(break1);
+
+        assertNull(TimeCalculator.calcBreaktime(day));
+    }
+
+    @Test
+    public void calcBreaktime_breakWithoutStop() {
+        day = new Workday(SOME_DATE);
+        WorkdayBreak break1 = new WorkdayBreak();
+        break1.setTimeStart(SOME_TIME);
+        day.getWorkdayBreaks().add(break1);
+
+        assertNull(TimeCalculator.calcBreaktime(day));
+    }
+
+    @Test
+    public void calcBreaktime_breakWithoutStart() {
+        day = new Workday(SOME_DATE);
+        WorkdayBreak break1 = new WorkdayBreak();
+        break1.setTimeStop(SOME_TIME);
+        day.getWorkdayBreaks().add(break1);
+
+        assertNull(TimeCalculator.calcBreaktime(day));
+    }
+
+    @Test
+    public void calcBreaktime_breakWithTimesEqual() {
+        day = new Workday(SOME_DATE);
+        WorkdayBreak break1 = new WorkdayBreak();
+        break1.setTimeStart(SOME_TIME);
+        break1.setTimeStop(SOME_TIME);
+        day.getWorkdayBreaks().add(break1);
+
+        final LocalTime result = TimeCalculator.calcBreaktime(day);
+        assertEquals(0, result.getHour());
+        assertEquals(0, result.getMinute());
+        assertEquals(0, result.getSecond());
+        assertEquals(0, result.getNano());
+    }
+
+    @Test
+    public void calcBreaktime_break() {
+        day = new Workday(SOME_DATE);
+        WorkdayBreak break1 = new WorkdayBreak();
+        break1.setTimeStart(SOME_TIME);
+        break1.setTimeStop(SOME_TIME.plusHours(1).plusMinutes(2));
+        day.getWorkdayBreaks().add(break1);
+
+        final LocalTime result = TimeCalculator.calcBreaktime(day);
+        assertEquals(1, result.getHour());
+        assertEquals(2, result.getMinute());
+        assertEquals(0, result.getSecond());
+        assertEquals(0, result.getNano());
+    }
+
+    @Test
+    public void calcBreaktime_twoBreaks() {
+        day = new Workday(SOME_DATE);
+        WorkdayBreak break1 = new WorkdayBreak();
+        break1.setTimeStart(SOME_TIME);
+        break1.setTimeStop(SOME_TIME.plusHours(1).plusMinutes(2));
+        day.getWorkdayBreaks().add(break1);
+        WorkdayBreak break2 = new WorkdayBreak();
+        break2.setTimeStart(SOME_TIME.plusHours(2));
+        break2.setTimeStop(SOME_TIME.plusHours(3).plusMinutes(3));
+        day.getWorkdayBreaks().add(break2);
+
+        final LocalTime result = TimeCalculator.calcBreaktime(day);
+        assertEquals(2, result.getHour());
+        assertEquals(5, result.getMinute());
+        assertEquals(0, result.getSecond());
+        assertEquals(0, result.getNano());
+    }
+
+    @Test
+    public void calcWorktime_withBreaks() {
+        day = new Workday(SOME_DATE);
+        day.setTimeStart(SOME_TIME);
+        day.setTimeStop(SOME_TIME.plusHours(1).plusMinutes(2));
+        WorkdayBreak break1 = new WorkdayBreak();
+        break1.setTimeStart(SOME_TIME);
+        break1.setTimeStop(SOME_TIME.plusHours(0).plusMinutes(2));
+        day.getWorkdayBreaks().add(break1);
+        WorkdayBreak break2 = new WorkdayBreak();
+        break2.setTimeStart(SOME_TIME.plusHours(2));
+        break2.setTimeStop(SOME_TIME.plusHours(2).plusMinutes(3));
+        day.getWorkdayBreaks().add(break2);
+
+        final LocalTime result = TimeCalculator.calcWorktime(day);
+        assertEquals(0, result.getHour());
+        assertEquals(57, result.getMinute());
+        assertEquals(0, result.getSecond());
+        assertEquals(0, result.getNano());
+    }
 }

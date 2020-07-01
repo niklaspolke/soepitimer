@@ -101,6 +101,24 @@ public class Workday {
         str.append(", \"date\": \"").append(getDate().toString()).append("\"");
         str.append(", \"timeStart\": ").append(localTimeToString(timeStart));
         str.append(", \"timeStop\": ").append(localTimeToString(timeStop));
+        str.append(", \"breaks\": ").append("[");
+        for (WorkdayBreak singleBreak : getWorkdayBreaks()) {
+            if (singleBreak != getWorkdayBreaks().get(0)) {
+                str.append(",");
+            }
+            str.append(" ");
+            str.append(breakToString(singleBreak));
+        }
+        str.append(" ]");
+        str.append(" }");
+        return str.toString();
+    }
+
+    private static String breakToString(final WorkdayBreak singleBreak) {
+        final StringBuffer str = new StringBuffer();
+        str.append("{ \"id\": ").append(singleBreak.getId());
+        str.append(", \"timeStart\": ").append(localTimeToString(singleBreak.getTimeStart()));
+        str.append(", \"timeStop\": ").append(localTimeToString(singleBreak.getTimeStop()));
         str.append(" }");
         return str.toString();
     }

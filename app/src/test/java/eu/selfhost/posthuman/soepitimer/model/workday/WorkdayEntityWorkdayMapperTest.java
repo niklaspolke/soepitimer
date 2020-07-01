@@ -277,12 +277,11 @@ public class WorkdayEntityWorkdayMapperTest {
     }
 
     @Test
-    public void export_withId_withTimes_and1Break() {
+    public void export_withId_withTimes_and1NewBreak() {
         day.setId(SOME_ID);
         day.setTimeStart(SOME_TIME);
         day.setTimeStop(SOME_TIME.plusHours(1));
         WorkdayBreak break1 = new WorkdayBreak();
-        break1.setId(SOME_ID + 10);
         break1.setTimeStart(SOME_TIME.plusMinutes(10));
         break1.setTimeStop(SOME_TIME.plusMinutes(20));
         day.getWorkdayBreaks().add(break1);
@@ -297,7 +296,8 @@ public class WorkdayEntityWorkdayMapperTest {
 
         assertNotNull(result.breakEntityList);
         assertEquals(1, result.breakEntityList.size());
-        assertEquals(SOME_ID + 10, result.breakEntityList.get(0).id);
+        assertEquals(0, result.breakEntityList.get(0).id);
+        assertEquals(SOME_ID, result.breakEntityList.get(0).workdayId);
         assertEquals(SOME_TIME.plusMinutes(10).toString(), result.breakEntityList.get(0).breakStart);
         assertEquals(SOME_TIME.plusMinutes(20).toString(), result.breakEntityList.get(0).breakEnd);
     }
@@ -335,14 +335,17 @@ public class WorkdayEntityWorkdayMapperTest {
         assertEquals(3, result.breakEntityList.size());
 
         assertEquals(SOME_ID + 10, result.breakEntityList.get(0).id);
+        assertEquals(SOME_ID, result.breakEntityList.get(0).workdayId);
         assertEquals(SOME_TIME.plusMinutes(10).toString(), result.breakEntityList.get(0).breakStart);
         assertEquals(SOME_TIME.plusMinutes(20).toString(), result.breakEntityList.get(0).breakEnd);
 
         assertEquals(SOME_ID + 20, result.breakEntityList.get(1).id);
+        assertEquals(SOME_ID, result.breakEntityList.get(1).workdayId);
         assertEquals(SOME_TIME.plusMinutes(30).toString(), result.breakEntityList.get(1).breakStart);
         assertEquals(SOME_TIME.plusMinutes(40).toString(), result.breakEntityList.get(1).breakEnd);
 
         assertEquals(SOME_ID + 30, result.breakEntityList.get(2).id);
+        assertEquals(SOME_ID, result.breakEntityList.get(2).workdayId);
         assertEquals(SOME_TIME.plusMinutes(45).toString(), result.breakEntityList.get(2).breakStart);
         assertEquals(SOME_TIME.plusMinutes(50).toString(), result.breakEntityList.get(2).breakEnd);
     }

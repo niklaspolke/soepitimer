@@ -179,9 +179,13 @@ public class DatabaseSyncServiceTest {
 
         final ArgumentCaptor<BreakEntity> insertBreakCapture = ArgumentCaptor.forClass(BreakEntity.class);
         verify(breakdaoMock).insert(insertBreakCapture.capture());
+        final ArgumentCaptor<BreakEntity> updateBreakCapture = ArgumentCaptor.forClass(BreakEntity.class);
+        verify(breakdaoMock).update(updateBreakCapture.capture());
         verifyNoMoreInteractions(breakdaoMock);
         assertNotNull(insertBreakCapture.getValue());
         assertEquals(SOME_TIME.toString(), insertBreakCapture.getValue().breakStart);
+        assertNotNull(updateBreakCapture.getValue());
+        assertEquals(SOME_ID + 10, updateBreakCapture.getValue().id);
 
         assertNotNull(updateWorkdayCapture.getValue());
         assertEquals(SOME_DATE.toString(), updateWorkdayCapture.getValue().date);

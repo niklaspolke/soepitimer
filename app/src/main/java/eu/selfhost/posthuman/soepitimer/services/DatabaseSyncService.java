@@ -59,8 +59,10 @@ public class DatabaseSyncService extends SingleThreadPoolService {
                 lazilyGetWorkdayDao().update(entity);
                 if (entity.breakEntityList != null && entity.breakEntityList.size() > 0) {
                     for (BreakEntity breakEntity : entity.breakEntityList) {
-                        if (Workday.NO_ID == breakEntity.id) {
-                            lazilyGetBreakDao().insert(breakEntity);
+                        if (0 == breakEntity.id) {
+                            long resultId = lazilyGetBreakDao().insert(breakEntity);
+                        } else {
+                            lazilyGetBreakDao().update(breakEntity);
                         }
                     }
                 }

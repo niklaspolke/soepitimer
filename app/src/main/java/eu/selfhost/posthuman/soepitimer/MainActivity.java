@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,9 +18,12 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Locale;
 
+import eu.selfhost.posthuman.soepitimer.model.workday.TimeCalculator;
 import eu.selfhost.posthuman.soepitimer.model.workday.Workday;
+import eu.selfhost.posthuman.soepitimer.model.workday.WorkdayBreak;
 import eu.selfhost.posthuman.soepitimer.model.workday.WorkdayCollection;
 import eu.selfhost.posthuman.soepitimer.services.DatabaseSyncService;
 
@@ -88,6 +92,21 @@ public class MainActivity extends AppCompatActivity {
         syncDataInBackground();
     }
 
+    public void actionBreak(final View view) {
+        final List<WorkdayBreak> breaks = WorkdayCollection.workday.getWorkdayBreaks();
+        if (breaks.size() > 0 && breaks.get(breaks.size() - 1).getTimeStop() == null) {
+            breaks.get(breaks.size() - 1).setTimeStop(LocalTime.now());
+        } else {
+            WorkdayBreak newBreak = new WorkdayBreak();
+            newBreak.setTimeStart(LocalTime.now());
+            breaks.add(newBreak);
+        }
+        WorkdayCollection.workday.setDirty();
+
+        updateView();
+        syncDataInBackground();
+    }
+
     public void actionStop(final View view) {
         WorkdayCollection.workday.setTimeStop(LocalTime.now());
         updateView();
@@ -104,33 +123,36 @@ public class MainActivity extends AppCompatActivity {
         final LocalDate date = workday.getDate();
         textView.setText(date.format(DATE_FORMATTER));
 
-        textView = findViewById(R.id.startTime);
-        if (workday.getTimeStart() != null) {
-            textView.setText(workday.getTimeStart().format(TIME_FORMATTER));
-        } else {
-            textView.setText(TIME_INITIAL_VALUE);
-        }
+        setTimeAsTextOrDefaultIfNull(findViewById(R.id.startTime), workday.getTimeStart());
+        setTimeAsTextOrDefaultIfNull(findViewById(R.id.stopTime), workday.getTimeStop());
 
-        textView = findViewById(R.id.stopTime);
-        if (workday.getTimeStop() != null) {
-            textView.setText(workday.getTimeStop().format(TIME_FORMATTER));
-        } else {
-            textView.setText(TIME_INITIAL_VALUE);
-        }
+        setTimeAsTextOrDefaultIfNull(findViewById(R.id.workTime), TimeCalculator.calcWorktime(workday));
+        setTimeAsTextOrDefaultIfNull(findViewById(R.id.breakTime), TimeCalculator.calcBreaktime(workday));
 
-        textView = findViewById(R.id.workTime);
-        if (workday.getTimeStart() != null && workday.getTimeStop() != null) {
-            textView.setText(workday.getTimeStop().minusHours(workday.getTimeStart().getHour()).minusMinutes(workday.getTimeStart().getMinute()).format(TIME_FORMATTER));
-        } else {
-            textView.setText(TIME_INITIAL_VALUE);
-        }
-
-        if (workday.getTimeStart() != null && workday.getTimeStop() == null) {
-            findViewById(R.id.buttonStart).setEnabled(false);
-            findViewById(R.id.buttonStop).setEnabled(true);
-        } else {
+        if (workday.getTimeStart() == null) {
+            // day not started yet
             findViewById(R.id.buttonStart).setEnabled(true);
+            findViewById(R.id.buttonBreak).setEnabled(false);
+            ((Button) findViewById(R.id.buttonBreak)).setText(R.string.main_button_break_break);
             findViewById(R.id.buttonStop).setEnabled(false);
+        } else if (workday.getTimeStop() != null) {
+            // day already finished
+            findViewById(R.id.buttonStart).setEnabled(false);
+            findViewById(R.id.buttonBreak).setEnabled(false);
+            ((Button) findViewById(R.id.buttonBreak)).setText(R.string.main_button_break_break);
+            findViewById(R.id.buttonStop).setEnabled(false);
+        } else if (workday.getWorkdayBreaks().size() > 0 && workday.getWorkdayBreaks().get(workday.getWorkdayBreaks().size() - 1).getTimeStop() == null) {
+            // day started so far and within a break
+            findViewById(R.id.buttonStart).setEnabled(false);
+            findViewById(R.id.buttonBreak).setEnabled(true);
+            ((Button) findViewById(R.id.buttonBreak)).setText(R.string.main_button_break_continue);
+            findViewById(R.id.buttonStop).setEnabled(false);
+        } else {
+            // day started and not within a break
+            findViewById(R.id.buttonStart).setEnabled(false);
+            findViewById(R.id.buttonBreak).setEnabled(true);
+            ((Button) findViewById(R.id.buttonBreak)).setText(R.string.main_button_break_break);
+            findViewById(R.id.buttonStop).setEnabled(true);
         }
     }
 
@@ -153,6 +175,14 @@ public class MainActivity extends AppCompatActivity {
                     .build();
 
             jobScheduler.schedule(syncJobInfo);
+        }
+    }
+
+    private static void setTimeAsTextOrDefaultIfNull(final TextView view, final LocalTime time) {
+        if (time == null) {
+            view.setText(TIME_INITIAL_VALUE);
+        } else {
+            view.setText(time.format(TIME_FORMATTER));
         }
     }
 }

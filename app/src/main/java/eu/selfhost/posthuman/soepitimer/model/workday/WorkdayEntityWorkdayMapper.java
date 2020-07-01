@@ -63,7 +63,10 @@ public class WorkdayEntityWorkdayMapper {
             if (workday.getWorkdayBreaks().size() > 0) {
                 for (WorkdayBreak oneBreak : workday.getWorkdayBreaks()) {
                     final BreakEntity breakEntity = new BreakEntity();
-                    breakEntity.id = oneBreak.getId();
+                    if (Workday.NO_ID != oneBreak.getId()) {
+                        breakEntity.id = oneBreak.getId();
+                    }
+                    breakEntity.workdayId = result.id;
                     breakEntity.breakStart = toStringNullSafe(oneBreak.getTimeStart());
                     breakEntity.breakEnd = toStringNullSafe(oneBreak.getTimeStop());
                     result.breakEntityList.add(breakEntity);

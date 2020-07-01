@@ -39,7 +39,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:onClick="actionStart"
+        android:onClick="actionBreak"
         android:text="@string/main_button_break_break"
         app:layout_constraintBaseline_toBaselineOf="@+id/buttonStart"
         app:layout_constraintEnd_toStartOf="@+id/buttonStop"
@@ -130,13 +130,45 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
         android:clickable="false"
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:text="@string/main_default_worktime"
         android:textAlignment="center"
         app:layout_constraintBaseline_toBaselineOf="@+id/labelWorkTime"
+        app:layout_constraintEnd_toStartOf="@+id/labelBreakTime"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintStart_toEndOf="@+id/labelWorkTime" />
+
+    <TextView
+        android:id="@+id/labelBreakTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="48dp"
+        android:clickable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:text="@string/main_label_breaktime"
+        android:textAlignment="center"
+        app:layout_constraintBaseline_toBaselineOf="@+id/labelWorkTime"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/workTime" />
+
+    <TextView
+        android:id="@+id/breakTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="16dp"
+        android:clickable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:text="@string/main_default_breaktime"
+        android:textAlignment="center"
+        app:layout_constraintBaseline_toBaselineOf="@+id/labelWorkTime"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/labelBreakTime" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

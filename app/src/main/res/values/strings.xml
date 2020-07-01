@@ -15,4 +15,6 @@
     <string name="main_default_time">18:03</string>
     <string name="main_label_worktime">Arbeitszeit</string>
     <string name="main_default_worktime">00:00</string>
+    <string name="main_label_breaktime">Pausenzeit</string>
+    <string name="main_default_breaktime">00:00</string>
 </resources>
