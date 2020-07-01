@@ -3,8 +3,10 @@ package eu.selfhost.posthuman.soepitimer.model.workday;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 
-import eu.selfhost.posthuman.soepitimer.model.WorkdayEntity;
+import eu.selfhost.posthuman.soepitimer.model.BreakEntity;
+import eu.selfhost.posthuman.soepitimer.model.WorkdayEntityWithBreaks;
 
 /**
  * Copyright 2020 Niklas Polke
@@ -25,7 +27,7 @@ import eu.selfhost.posthuman.soepitimer.model.WorkdayEntity;
  */
 public class WorkdayEntityWorkdayMapper {
 
-    public static Workday importWorkdayEntity(final WorkdayEntity entity) {
+    public static Workday importWorkdayEntity(final WorkdayEntityWithBreaks entity) {
         Workday result = null;
         if (entity != null && entity.id != Workday.NO_ID) {
             final LocalDate date = parseDateNullSafe(entity.date);
@@ -34,19 +36,42 @@ public class WorkdayEntityWorkdayMapper {
                 result.setId(entity.id);
                 result.setTimeStart(parseTimeNullSafe(entity.workdayStart));
                 result.setTimeStop(parseTimeNullSafe(entity.workdayEnd));
+                if (entity.breakEntityList != null) {
+                    for (BreakEntity breakEntity : entity.breakEntityList) {
+                        WorkdayBreak wdBreak = new WorkdayBreak();
+                        wdBreak.setId(breakEntity.id);
+                        wdBreak.setTimeStart(parseTimeNullSafe(breakEntity.breakStart));
+                        wdBreak.setTimeStop(parseTimeNullSafe(breakEntity.breakEnd));
+                        result.getWorkdayBreaks().add(wdBreak);
+                    }
+                }
+                result.resetDirty();
             }
         }
         return result;
     }
 
-    public static WorkdayEntity exportWorkday(final Workday workday) {
-        WorkdayEntity result = null;
+    public static WorkdayEntityWithBreaks exportWorkday(final Workday workday) {
+        WorkdayEntityWithBreaks result = null;
         if (workday != null && workday.getDate() != null) {
-            result = new WorkdayEntity();
+            result = new WorkdayEntityWithBreaks();
             result.date = workday.getDate().toString();
             result.id = workday.getId();
             result.workdayStart = toStringNullSafe(workday.getTimeStart());
             result.workdayEnd = toStringNullSafe(workday.getTimeStop());
+            result.breakEntityList = new ArrayList<BreakEntity>();
+            if (workday.getWorkdayBreaks().size() > 0) {
+                for (WorkdayBreak oneBreak : workday.getWorkdayBreaks()) {
+                    final BreakEntity breakEntity = new BreakEntity();
+                    if (Workday.NO_ID != oneBreak.getId()) {
+                        breakEntity.id = oneBreak.getId();
+                    }
+                    breakEntity.workdayId = result.id;
+                    breakEntity.breakStart = toStringNullSafe(oneBreak.getTimeStart());
+                    breakEntity.breakEnd = toStringNullSafe(oneBreak.getTimeStop());
+                    result.breakEntityList.add(breakEntity);
+                }
+            }
         }
         return result;
     }

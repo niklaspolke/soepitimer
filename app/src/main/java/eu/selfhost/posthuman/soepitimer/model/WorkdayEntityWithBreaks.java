@@ -1,12 +1,10 @@
 package eu.selfhost.posthuman.soepitimer.model;
 
-import androidx.annotation.NonNull;
-import androidx.room.ColumnInfo;
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
 import androidx.room.Relation;
 
 import java.util.List;
+
+import eu.selfhost.posthuman.soepitimer.model.WorkdayEntity;
 
 /**
  * Copyright 2020 Niklas Polke
@@ -25,20 +23,7 @@ import java.util.List;
  *
  * @author Niklas Polke
  */
-@Entity(tableName = "workday")
-public class WorkdayEntity {
-
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id")
-    public long id;
-
-    @NonNull
-    @ColumnInfo(name = "date", index = true)
-    public String date;
-
-    @ColumnInfo(name = "time_start")
-    public String workdayStart;
-
-    @ColumnInfo(name = "time_stop")
-    public String workdayEnd;
+public class WorkdayEntityWithBreaks extends WorkdayEntity {
+    @Relation(parentColumn = "id", entityColumn = "workdayId")
+    public List<BreakEntity> breakEntityList;
 }

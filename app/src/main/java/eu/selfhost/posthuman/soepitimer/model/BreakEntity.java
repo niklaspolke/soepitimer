@@ -1,12 +1,10 @@
 package eu.selfhost.posthuman.soepitimer.model;
 
-import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
-import androidx.room.Relation;
-
-import java.util.List;
 
 /**
  * Copyright 2020 Niklas Polke
@@ -25,20 +23,21 @@ import java.util.List;
  *
  * @author Niklas Polke
  */
-@Entity(tableName = "workday")
-public class WorkdayEntity {
-
+@Entity(tableName = "workdaybreak", foreignKeys = @ForeignKey(entity = WorkdayEntity.class,
+        parentColumns = "id",
+        childColumns = "workdayId",
+        onDelete = ForeignKey.CASCADE), indices = {@Index("workdayId")})
+public class BreakEntity {
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     public long id;
 
-    @NonNull
-    @ColumnInfo(name = "date", index = true)
-    public String date;
+    @ColumnInfo(name = "workdayId")
+    public long workdayId;
 
-    @ColumnInfo(name = "time_start")
-    public String workdayStart;
+    @ColumnInfo(name = "break_start")
+    public String breakStart;
 
-    @ColumnInfo(name = "time_stop")
-    public String workdayEnd;
+    @ColumnInfo(name = "break_stop")
+    public String breakEnd;
 }

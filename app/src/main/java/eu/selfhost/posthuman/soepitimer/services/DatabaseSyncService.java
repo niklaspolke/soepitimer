@@ -4,8 +4,11 @@ import android.app.job.JobParameters;
 import android.content.Intent;
 
 import eu.selfhost.posthuman.soepitimer.database.AppDatabase;
+import eu.selfhost.posthuman.soepitimer.database.WorkdayBreakDao;
 import eu.selfhost.posthuman.soepitimer.database.WorkdayDao;
+import eu.selfhost.posthuman.soepitimer.model.BreakEntity;
 import eu.selfhost.posthuman.soepitimer.model.WorkdayEntity;
+import eu.selfhost.posthuman.soepitimer.model.WorkdayEntityWithBreaks;
 import eu.selfhost.posthuman.soepitimer.model.workday.Workday;
 import eu.selfhost.posthuman.soepitimer.model.workday.WorkdayCollection;
 import eu.selfhost.posthuman.soepitimer.model.workday.WorkdayEntityWorkdayMapper;
@@ -33,6 +36,7 @@ public class DatabaseSyncService extends SingleThreadPoolService {
     public static final String BROADCAST_ACTION_UPDATE = "DatabaseSyncService.BroadcastActionUpdate";
 
     WorkdayDao workdayDao;
+    WorkdayBreakDao breakDao;
     MockableLocalBroadcastManager localBroadcastManager = new MockableLocalBroadcastManager();
 
     @Override
@@ -41,31 +45,48 @@ public class DatabaseSyncService extends SingleThreadPoolService {
         if (workday != null && workday.getDate() != null) {
             if (workday.getId() == Workday.NO_ID) {
                 // insert or findByDate
-                final WorkdayEntity dbEntity = lazilyGetDao().findByDate(workday.getDate().toString());
+                final WorkdayEntity dbEntity = lazilyGetWorkdayDao().findByDate(workday.getDate().toString());
 
                 if (dbEntity == null) {
                     // insert new WorkdayEntity for date
                     final WorkdayEntity newEntity = new WorkdayEntity();
                     newEntity.date = workday.getDate().toString();
-                    lazilyGetDao().insert(newEntity);
+                    lazilyGetWorkdayDao().insert(newEntity);
                 }
             } else if (workday.isDirty()) {
                 // update WorkdayEntity
-                lazilyGetDao().update(WorkdayEntityWorkdayMapper.exportWorkday(workday));
+                WorkdayEntityWithBreaks entity = WorkdayEntityWorkdayMapper.exportWorkday(workday);
+                lazilyGetWorkdayDao().update(entity);
+                if (entity.breakEntityList != null && entity.breakEntityList.size() > 0) {
+                    for (BreakEntity breakEntity : entity.breakEntityList) {
+                        if (0 == breakEntity.id) {
+                            long resultId = lazilyGetBreakDao().insert(breakEntity);
+                        } else {
+                            lazilyGetBreakDao().update(breakEntity);
+                        }
+                    }
+                }
             }
             // overwrite local changes with values from database
-            WorkdayCollection.workday = WorkdayEntityWorkdayMapper.importWorkdayEntity(lazilyGetDao().findByDate(workday.getDate().toString()));
-            WorkdayCollection.workday.resetDirty();
+            WorkdayCollection.workday = WorkdayEntityWorkdayMapper.importWorkdayEntity(lazilyGetWorkdayDao().findByDate(workday.getDate().toString()));
             localBroadcastManager.sendBroadcast(this, new Intent(BROADCAST_ACTION_UPDATE));
         }
         return true;
     }
 
-    private WorkdayDao lazilyGetDao() {
+    private WorkdayDao lazilyGetWorkdayDao() {
         if (workdayDao == null) {
             // delayed creation to be mockable
             workdayDao = AppDatabase.get().workdayDao();
         }
         return workdayDao;
+    }
+
+    private WorkdayBreakDao lazilyGetBreakDao() {
+        if (breakDao == null) {
+            // delayed creation to be mockable
+            breakDao = AppDatabase.get().workdayBreakDao();
+        }
+        return breakDao;
     }
 }

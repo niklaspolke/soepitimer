@@ -2,6 +2,8 @@ package eu.selfhost.posthuman.soepitimer.model.workday;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -31,6 +33,8 @@ public class Workday {
     private LocalTime timeStart;
 
     private LocalTime timeStop;
+
+    private List<WorkdayBreak> breaks = new ArrayList<WorkdayBreak>();
 
     private boolean dirty = false;
 
@@ -74,8 +78,16 @@ public class Workday {
         timeStop = cleanedNewTime;
     }
 
+    public List<WorkdayBreak> getWorkdayBreaks() {
+        return breaks;
+    }
+
     public boolean isDirty() {
         return dirty;
+    }
+
+    public void setDirty() {
+        dirty = true;
     }
 
     public void resetDirty() {
@@ -89,6 +101,24 @@ public class Workday {
         str.append(", \"date\": \"").append(getDate().toString()).append("\"");
         str.append(", \"timeStart\": ").append(localTimeToString(timeStart));
         str.append(", \"timeStop\": ").append(localTimeToString(timeStop));
+        str.append(", \"breaks\": ").append("[");
+        for (WorkdayBreak singleBreak : getWorkdayBreaks()) {
+            if (singleBreak != getWorkdayBreaks().get(0)) {
+                str.append(",");
+            }
+            str.append(" ");
+            str.append(breakToString(singleBreak));
+        }
+        str.append(" ]");
+        str.append(" }");
+        return str.toString();
+    }
+
+    private static String breakToString(final WorkdayBreak singleBreak) {
+        final StringBuffer str = new StringBuffer();
+        str.append("{ \"id\": ").append(singleBreak.getId());
+        str.append(", \"timeStart\": ").append(localTimeToString(singleBreak.getTimeStart()));
+        str.append(", \"timeStop\": ").append(localTimeToString(singleBreak.getTimeStop()));
         str.append(" }");
         return str.toString();
     }

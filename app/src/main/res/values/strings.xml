@@ -6,6 +6,8 @@
 
     <!-- MainActivity -->
     <string name="main_button_start">Start</string>
+    <string name="main_button_break_break">Pause</string>
+    <string name="main_button_break_continue">Fortsetzen</string>
     <string name="main_button_stop">Stop</string>
     <string name="main_label_start">Arbeitsbeginn</string>
     <string name="main_label_stop">Arbeitsende</string>
@@ -13,4 +15,6 @@
     <string name="main_default_time">18:03</string>
     <string name="main_label_worktime">Arbeitszeit</string>
     <string name="main_default_worktime">00:00</string>
+    <string name="main_label_breaktime">Pausenzeit</string>
+    <string name="main_default_breaktime">00:00</string>
 </resources>

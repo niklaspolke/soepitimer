@@ -26,10 +26,35 @@ public class TimeCalculator {
         if (workday != null
                 && workday.getTimeStart() != null && workday.getTimeStop() != null
                 && !workday.getTimeStart().isAfter(workday.getTimeStop())) {
-            result = workday.getTimeStop()
-                    .minusHours(workday.getTimeStart().getHour())
-                    .minusMinutes(workday.getTimeStart().getMinute());
+            result = minus(workday.getTimeStop(), workday.getTimeStart());
+            result = minus(result, calcBreaktime(workday));
         }
         return result;
+    }
+
+    public static LocalTime calcBreaktime(final Workday workday) {
+        LocalTime result = null;
+        if (workday != null && workday.getWorkdayBreaks() != null && workday.getWorkdayBreaks().size() > 0) {
+            for (WorkdayBreak singleBreak : workday.getWorkdayBreaks()) {
+                if (singleBreak.getTimeStart() != null && singleBreak.getTimeStop() != null
+                        && !singleBreak.getTimeStart().isAfter(singleBreak.getTimeStop())) {
+                    final LocalTime difference = minus(singleBreak.getTimeStop(), singleBreak.getTimeStart());
+                    result = result == null ? difference : plus(result, difference);
+                }
+            }
+        }
+        return result;
+    }
+
+    private static LocalTime plus(final LocalTime time1, final LocalTime time2) {
+        return time1.plusHours(time2.getHour()).plusMinutes(time2.getMinute());
+    }
+
+    private static LocalTime minus(final LocalTime time1, final LocalTime time2) {
+        if (time2 == null) {
+            return time1;
+        } else {
+            return time1.minusHours(time2.getHour()).minusMinutes(time2.getMinute());
+        }
     }
 }

@@ -1,12 +1,14 @@
-package eu.selfhost.posthuman.soepitimer.model;
+package eu.selfhost.posthuman.soepitimer.database;
 
-import androidx.annotation.NonNull;
-import androidx.room.ColumnInfo;
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
-import androidx.room.Relation;
+import androidx.room.Dao;
+import androidx.room.Delete;
+import androidx.room.Insert;
+import androidx.room.Query;
+import androidx.room.Update;
 
 import java.util.List;
+
+import eu.selfhost.posthuman.soepitimer.model.BreakEntity;
 
 /**
  * Copyright 2020 Niklas Polke
@@ -25,20 +27,17 @@ import java.util.List;
  *
  * @author Niklas Polke
  */
-@Entity(tableName = "workday")
-public class WorkdayEntity {
+@Dao
+public interface WorkdayBreakDao {
+    @Query("SELECT * FROM workdaybreak WHERE workdayId = :workdayId")
+    List<BreakEntity> findByWorkday(long workdayId);
 
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id")
-    public long id;
+    @Insert
+    long insert(BreakEntity breakEntity);
 
-    @NonNull
-    @ColumnInfo(name = "date", index = true)
-    public String date;
+    @Update
+    void update(BreakEntity breakEntity);
 
-    @ColumnInfo(name = "time_start")
-    public String workdayStart;
-
-    @ColumnInfo(name = "time_stop")
-    public String workdayEnd;
+    @Delete
+    void delete(BreakEntity breakEntity);
 }

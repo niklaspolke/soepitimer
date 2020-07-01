@@ -4,9 +4,11 @@ import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Transaction;
 import androidx.room.Update;
 
 import eu.selfhost.posthuman.soepitimer.model.WorkdayEntity;
+import eu.selfhost.posthuman.soepitimer.model.WorkdayEntityWithBreaks;
 
 /**
  * Copyright 2020 Niklas Polke
@@ -27,8 +29,9 @@ import eu.selfhost.posthuman.soepitimer.model.WorkdayEntity;
  */
 @Dao
 public interface WorkdayDao {
+    @Transaction
     @Query("SELECT * FROM workday WHERE date = :date")
-    WorkdayEntity findByDate(String date);
+    WorkdayEntityWithBreaks findByDate(String date);
 
     @Insert
     long insert(WorkdayEntity workday);

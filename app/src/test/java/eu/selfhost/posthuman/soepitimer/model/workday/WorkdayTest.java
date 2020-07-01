@@ -7,6 +7,7 @@ import java.time.LocalTime;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -186,8 +187,14 @@ public class WorkdayTest {
     }
 
     @Test
+    public void getWorkdayBreaks_initial() {
+        assertNotNull(day.getWorkdayBreaks());
+        assertEquals(0, day.getWorkdayBreaks().size());
+    }
+
+    @Test
     public void toString_initial() {
-        assertEquals("{ \"id\": -1, \"date\": \"2020-06-09\", \"timeStart\": null, \"timeStop\": null }", day.toString());
+        assertEquals("{ \"id\": -1, \"date\": \"2020-06-09\", \"timeStart\": null, \"timeStop\": null, \"breaks\": [ ] }", day.toString());
     }
 
     @Test
@@ -195,6 +202,22 @@ public class WorkdayTest {
         day.setId(4);
         day.setTimeStart(SOME_TIME.minusHours(10));
         day.setTimeStop(SOME_TIME);
-        assertEquals("{ \"id\": 4, \"date\": \"2020-06-09\", \"timeStart\": \"07:39\", \"timeStop\": \"17:39\" }", day.toString());
+        assertEquals("{ \"id\": 4, \"date\": \"2020-06-09\", \"timeStart\": \"07:39\", \"timeStop\": \"17:39\", \"breaks\": [ ] }", day.toString());
+    }
+
+    @Test
+    public void toString_withTimesAndTwoBreaks() {
+        day.setId(4);
+        day.setTimeStart(SOME_TIME.minusHours(10));
+        day.setTimeStop(SOME_TIME);
+        WorkdayBreak break1 = new WorkdayBreak();
+        break1.setId(14);
+        break1.setTimeStart(SOME_TIME.minusHours(9));
+        break1.setTimeStop(SOME_TIME.minusHours(8));
+        WorkdayBreak break2 = new WorkdayBreak();
+        break2.setTimeStart(SOME_TIME.minusHours(7));
+        day.getWorkdayBreaks().add(break1);
+        day.getWorkdayBreaks().add(break2);
+        assertEquals("{ \"id\": 4, \"date\": \"2020-06-09\", \"timeStart\": \"07:39\", \"timeStop\": \"17:39\", \"breaks\": [ { \"id\": 14, \"timeStart\": \"08:39\", \"timeStop\": \"09:39\" }, { \"id\": -1, \"timeStart\": \"10:39\", \"timeStop\": null } ] }", day.toString());
     }
 }
